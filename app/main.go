@@ -64,6 +64,8 @@ func main() {
 			break
 		}
 
+		fmt.Println("Received data", req)
+
 		reply := DNSMessage{
 			ID:      1234,
 			QR:      true,
