@@ -4,25 +4,6 @@ import (
 	"encoding/binary"
 )
 
-type Flags struct {
-	QR     bool  // indicates whether the message is a query (0) or a reply (1)
-	Opcode uint8 // 4 bits
-	AA     bool  // Authoritative Answer
-	TC     bool  // Truncation
-	RD     bool  // Recursion Desired
-	RA     bool  // Recursion Available
-	Z      uint8 // 3 bits reserved for future use by DNSSEC
-	Rcode  uint8 // 4 bits response code
-}
-
-func (*Flags) Marshal() []byte {
-	marshaled := make([]byte, 2)
-
-	marshaled[0] = 1 << 7 // QR
-
-	return marshaled
-}
-
 type Header struct {
 	ID    uint16 // transaction ID
 	Flags *Flags // flags
@@ -31,7 +12,6 @@ type Header struct {
 	AnCount uint16 // number of records in the answer section
 	NsCount uint16 // number of records in the authority section
 	ArCount uint16 // number of records in the additional section
-
 }
 
 func (m *Header) Marshal() []byte {
@@ -44,4 +24,14 @@ func (m *Header) Marshal() []byte {
 	binary.BigEndian.PutUint16(marshaled[6:8], m.AnCount)
 
 	return marshaled
+}
+
+func UnmarshalHeader(b []byte) *Header {
+
+	return &Header{
+		ID:      binary.BigEndian.Uint16(b[0:2]),
+		Flags:   UnmarshalFlags(b[2:4]),
+		QDCount: 1,
+		AnCount: 1,
+	}
 }

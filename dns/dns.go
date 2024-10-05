@@ -1,7 +1,7 @@
 package dns
 
 func Unmarshal(b []byte) *Reply {
-	// _header := b[:12]
+	header := b[:12]
 	body := b[12:]
 	name := UnmarshalName(body)
 
@@ -12,14 +12,7 @@ func Unmarshal(b []byte) *Reply {
 			Class: 1,
 		},
 
-		Header: &Header{
-			ID:      1234,
-			QDCount: 1,
-			AnCount: 1,
-			Flags: &Flags{
-				QR: true,
-			},
-		},
+		Header: UnmarshalHeader(header),
 
 		Answer: &Answer{
 			Name:   name,
