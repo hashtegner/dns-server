@@ -41,6 +41,7 @@ func (m *Header) Marshal() []byte {
 	copy(marshaled[2:4], m.Flags.Marshal())
 
 	binary.BigEndian.PutUint16(marshaled[4:6], m.QDCount)
+	binary.BigEndian.PutUint16(marshaled[6:8], m.AnCount)
 
 	return marshaled
 }
