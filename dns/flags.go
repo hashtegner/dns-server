@@ -12,9 +12,9 @@ type Flags struct {
 	Rcode uint8 // 4 bits response code, 0 => no error, 4 => not implemented
 }
 
-func UnmarshalFlags(b []byte) *Flags {
-	first := b[0]
-	second := b[1]
+func UnmarshalFlags(buff []byte) *Flags {
+	first := buff[0]
+	second := buff[1]
 	opcode := (first & 120) >> 3
 
 	var rcode uint8

@@ -1,26 +1,46 @@
 package dns
 
-func Unmarshal(b []byte) *Reply {
-	header := b[:12]
-	body := b[12:]
-	name := UnmarshalName(body)
+import (
+	"bytes"
+)
 
-	return &Reply{
-		Question: &Question{
-			Name:  name,
-			Type:  1,
-			Class: 1,
-		},
+const headerSize = 12
+const questionFlagsSize = 4
 
-		Header: UnmarshalHeader(header),
+func Unmarshal(buff []byte) *Reply {
+	rawHeader := buff[:headerSize]
+	rawQuestions := buff[headerSize:]
 
-		Answer: &Answer{
-			Name:   name,
-			Type:   1,
-			Class:  1,
+	header := UnmarshalHeader(rawHeader)
+	questions := make([]*Question, header.QDCount)
+
+	offset := 0
+	for i := 0; i < int(header.QDCount); i++ {
+		questions[i] = UnmarshalQuestion(rawQuestions, offset)
+		questionLength := bytes.Index(rawQuestions[offset:], []byte{0}) + questionFlagsSize
+
+		offset += questionLength + 1
+	}
+
+	header.AnCount = uint16(len(questions))
+	answers := make([]*Answer, len(questions))
+
+	for i := 0; i < len(questions); i++ {
+		question := questions[i]
+
+		answers[i] = &Answer{
+			Name:   question.Name,
+			Type:   question.Type,
+			Class:  question.Class,
 			TTL:    60,
 			Length: 4,
 			Data:   []byte{8, 8, 8, 8},
-		},
+		}
+	}
+
+	return &Reply{
+		Header:    header,
+		Questions: questions,
+		Answers:   answers,
 	}
 }

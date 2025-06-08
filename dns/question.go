@@ -8,6 +8,14 @@ type Question struct {
 	Class uint16 // 2 bytes (IN, CH, etc.)
 }
 
+func UnmarshalQuestion(buff []byte, offset int) *Question {
+	return &Question{
+		Name:  UnmarshalName(buff, offset),
+		Type:  1,
+		Class: 1,
+	}
+}
+
 func (q *Question) Marshal() []byte {
 	marshaled := make([]byte, 0)
 	marshaled = append(marshaled, q.Name.Marshal()...)

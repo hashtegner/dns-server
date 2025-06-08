@@ -26,12 +26,12 @@ func (m *Header) Marshal() []byte {
 	return marshaled
 }
 
-func UnmarshalHeader(b []byte) *Header {
+func UnmarshalHeader(buff []byte) *Header {
 
 	return &Header{
-		ID:      binary.BigEndian.Uint16(b[0:2]),
-		Flags:   UnmarshalFlags(b[2:4]),
-		QDCount: 1,
+		ID:      binary.BigEndian.Uint16(buff[0:2]),
+		Flags:   UnmarshalFlags(buff[2:4]),
+		QDCount: binary.BigEndian.Uint16(buff[4:6]),
 		AnCount: 1,
 	}
 }
